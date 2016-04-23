@@ -15,6 +15,7 @@
 		E02223EE1CCB18B9006376D6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E02223EC1CCB18B9006376D6 /* LaunchScreen.storyboard */; };
 		E02223F91CCB18B9006376D6 /* MatchismoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E02223F81CCB18B9006376D6 /* MatchismoTests.m */; };
 		E02224041CCB18B9006376D6 /* MatchismoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = E02224031CCB18B9006376D6 /* MatchismoUITests.m */; };
+		E02224131CCB1AD6006376D6 /* Card.m in Sources */ = {isa = PBXBuildFile; fileRef = E02224121CCB1AD6006376D6 /* Card.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,8 @@
 		E02223FF1CCB18B9006376D6 /* MatchismoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatchismoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E02224031CCB18B9006376D6 /* MatchismoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MatchismoUITests.m; sourceTree = "<group>"; };
 		E02224051CCB18B9006376D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E02224111CCB1AD6006376D6 /* Card.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Card.h; path = Model/Card.h; sourceTree = "<group>"; };
+		E02224121CCB1AD6006376D6 /* Card.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Card.m; path = Model/Card.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,14 +104,13 @@
 		E02223DD1CCB18B9006376D6 /* Matchismo */ = {
 			isa = PBXGroup;
 			children = (
-				E02223E11CCB18B9006376D6 /* AppDelegate.h */,
-				E02223E21CCB18B9006376D6 /* AppDelegate.m */,
 				E02223E41CCB18B9006376D6 /* ViewController.h */,
 				E02223E51CCB18B9006376D6 /* ViewController.m */,
 				E02223E71CCB18B9006376D6 /* Main.storyboard */,
 				E02223EA1CCB18B9006376D6 /* Assets.xcassets */,
 				E02223EC1CCB18B9006376D6 /* LaunchScreen.storyboard */,
 				E02223EF1CCB18B9006376D6 /* Info.plist */,
+				E02224141CCB1AE2006376D6 /* Model */,
 				E02223DE1CCB18B9006376D6 /* Supporting Files */,
 			);
 			path = Matchismo;
@@ -117,6 +119,8 @@
 		E02223DE1CCB18B9006376D6 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E02223E11CCB18B9006376D6 /* AppDelegate.h */,
+				E02223E21CCB18B9006376D6 /* AppDelegate.m */,
 				E02223DF1CCB18B9006376D6 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -138,6 +142,16 @@
 				E02224051CCB18B9006376D6 /* Info.plist */,
 			);
 			path = MatchismoUITests;
+			sourceTree = "<group>";
+		};
+		E02224141CCB1AE2006376D6 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E02224111CCB1AD6006376D6 /* Card.h */,
+				E02224121CCB1AD6006376D6 /* Card.m */,
+			);
+			name = Model;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,6 +287,7 @@
 				E02223E61CCB18B9006376D6 /* ViewController.m in Sources */,
 				E02223E31CCB18B9006376D6 /* AppDelegate.m in Sources */,
 				E02223E01CCB18B9006376D6 /* main.m in Sources */,
+				E02224131CCB1AD6006376D6 /* Card.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -496,6 +511,7 @@
 				E022240A1CCB18B9006376D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E022240B1CCB18B9006376D6 /* Build configuration list for PBXNativeTarget "MatchismoTests" */ = {
 			isa = XCConfigurationList;
@@ -504,6 +520,7 @@
 				E022240D1CCB18B9006376D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E022240E1CCB18B9006376D6 /* Build configuration list for PBXNativeTarget "MatchismoUITests" */ = {
 			isa = XCConfigurationList;
@@ -512,6 +529,7 @@
 				E02224101CCB18B9006376D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
