@@ -30,7 +30,7 @@
                                     <constraint firstAttribute="width" constant="96" id="mwo-nZ-TI2"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                                <state key="normal" title="A♣︎" backgroundImage="CardFront">
+                                <state key="normal" backgroundImage="CardBack">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
@@ -58,6 +58,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="CardFront" width="64" height="96"/>
+        <image name="CardBack" width="64" height="96"/>
     </resources>
 </document>

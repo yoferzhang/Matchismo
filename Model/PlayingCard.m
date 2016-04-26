@@ -37,7 +37,7 @@
 
 - (void)setSuit:(NSString *)suit
 {
-    if ([[PlayingCard validSuits] containsString:suit]) {
+    if ([[PlayingCard validSuits] containsObject:suit]) {
         _suit = suit;
     }
 } // setSuit:
@@ -58,7 +58,5 @@
         _rank = rank;
     }
 } // setRank:
-
-
 
 @end
