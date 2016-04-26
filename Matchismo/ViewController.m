@@ -20,7 +20,8 @@
 {
     _flipCount = flipCount;
     self.flipsLabel.text = [NSString stringWithFormat:@"Flips: %d", self.flipCount];
-}
+    
+} // setFlipCount:
 
 - (IBAction)touchCardButton:(UIButton *)sender {
     if ([sender.currentTitle length]) {
@@ -36,7 +37,8 @@
     // update flipCount in there
     // because every time touch the button, this method will be call
     self.flipCount++;
-}
+    
+} // touchCardButton:
 
 
 @end
