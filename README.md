@@ -4,8 +4,9 @@ Stanford iOS7 Assignment
 
 Use Xcode 7.3 AND OS X EI Captian 10.11.4
 
-## 简单牌面翻转
 >更新时间：2016.04.22
+
+## 简单牌面翻转
 
 修改`Main.storyboard`：设置背景色，添加一个`Button`，添加背景图和前景图。设置`Title`为`A♣︎`。并在`ViewController.m`中添加一个方法：
 
@@ -52,6 +53,7 @@ self.flipCount++;
 ```
 
 >更新时间：2016.04.24
+
 ## 添加`Card`类
 
 
@@ -110,7 +112,8 @@ self.flipCount++;
 `PlayingCard.m`其他内容请查看工程源文件。
 
 >更新时间：2016.04.26
-##添加`Deck`类
+
+## 添加`Deck`类
 
 添加`Model`类`Deck`。用于存放一副牌，`Deck.h`内容：
 
@@ -267,4 +270,277 @@ self.flipCount++;
 ```
 
 `storyboard`中将牌`Button`的`Title`删掉，然后将`Background`设为`CardBack`，这样初始牌面为背面，并且牌面没有内容，点击之后就会进入`touchCardButton:`的else部分。实现了随机的效果。
+
+>更新时间：2016.05.06
+
+现在需要做一个可以进行匹配的游戏，在界面上需要放置12个`Button`，每行4个，3行，共12个。我这里用AutoLayout，从左边的Container Margin到右边的Container Margin长度为560。每行放置4张牌，如果没有间隔，每张牌的宽度为140，但是为了每张牌中间留出一个小间隙，需要3个间隙，就找到3和4的最小公倍数12。这样设计最后每张牌的宽度即为137，牌与牌之间的间隔都是4，然后加上Constraints。如下图所示：
+
+<center>
+![](http://ww2.sinaimg.cn/large/a9c4d5f6jw1f42z3e6qj1j20pf0h4gnx.jpg)
+</center>
+
+在iPhone6s上的测试结果如下图所示：
+>我更改了PlayingCard.m文件中的validSiuts函数，就是将里面的生成牌Suit的字符换成了彩色的字符，之前全都是黑色的。
+
+<center>
+![](http://ww3.sinaimg.cn/large/a9c4d5f6jw1f42zdon6t4j20ae0ijmyr.jpg)
+</center>
+
+>更新时间：2016.06.13
+
+## 添加`CardMatchingGame`类
+
+添加`Model`类`CardMatchingGame`，在`.h`文件中添加3个方法和1个属性：
+
+```objc
+#import <Foundation/Foundation.h>
+#import "Deck.h"
+#import "Card.h"
+
+@interface CardMatchingGame : NSObject
+
+// Designated initializer
+- (instancetype)initWithCardCount:(NSUInteger)count
+                        usingDeck:(Deck *)deck;
+
+- (void)chooseCardAtIndex:(NSUInteger)index;
+- (Card *)cardAtIndex:(NSUInteger)index;
+
+@property (nonatomic, readonly) NSInteger score;
+```
+
+这些就是将要实现的游戏的逻辑。在`.m`文件中添加一个`Class Extension`，将头文件中声明的属性为`readonly`的`score`数据重新声明为`readwrite`，在添加一个私有属性来存放牌组：
+
+```objc
+@interface CardMatchingGame ()
+
+@property (nonatomic,readwrite) NSInteger score;
+@property (nonatomic, strong) NSMutableArray *cards; // of Card
+
+@end
+```
+
+接下来实现方法：
+
+```objc
+
+@implementation CardMatchingGame
+
+#pragma mark - Custom Accessors
+
+- (NSMutableArray *)cards
+{
+    if (!_cards) {
+        _cards = [[NSMutableArray alloc] init];
+    }
+    
+    return _cards;
+} // cards
+
+#pragma mark - Designed initializer
+
+- (instancetype)initWithCardCount:(NSUInteger)count
+                        usingDeck:(Deck *)deck
+{
+    self = [super init];
+    
+    if (self) {
+        for (int i = 0; i < count; i++) {
+            Card *card = [deck drawRandomCard];
+            
+            if (card) {
+                [self.cards addObject:card];
+            } else {
+                self = nil;
+                break;
+            }
+            
+        }
+    }
+    
+    return self;
+} // initWithCardCount:usingDeck
+
+#pragma mark - Public
+
+- (Card *)cardAtIndex:(NSUInteger)index
+{
+    return (index < [self.cards count]) ? self.cards[index] : nil;
+} // cardAtIndex
+
+static const int MISMATCH_PENALTY = 2;
+static const int MATCH_BONUS = 4;
+static const int COST_TO_CHOOSE = 1;
+
+- (void)chooseCardAtIndex:(NSUInteger)index
+{
+    Card *card = [self cardAtIndex:index];
+    
+    if (card.isMatched) {
+        return;
+    }
+    
+
+    if (card.isChosen) {
+        card.chosen = NO;
+    } else {
+        // match against other chosen cards
+        for (Card *otherCard in self.cards) {
+            if (otherCard.isChosen && !otherCard.isMatched) {
+                int matchScore = [card match:@[otherCard]];
+                
+                if (matchScore) {
+                    self.score += matchScore * MATCH_BONUS;
+                    otherCard.matched = YES;
+                    card.matched = YES;
+                    
+                } else {
+                    self.score -= MISMATCH_PENALTY;
+                    otherCard.chosen = NO;
+                }
+                
+                break; // can only choose 2 cards for now
+                
+            }
+        }
+        
+        self.score -= COST_TO_CHOOSE;
+        
+        
+        card.chosen = YES;
+    }
+} // chooseCardAtIndex:n
+
+@end
+```
+
+接下来需要在`PlayingCard.m`中重写`Card`类中的方法`otherCards`：
+
+```objc
+#pragma mark - Overridden methods
+
+- (int)match:(NSArray *)otherCards
+{
+    int score = 0;
+    
+    if ([otherCards count] == 1) {
+        PlayingCard *otherCard = [otherCards firstObject];
+        
+        if (otherCard.rank == self.rank) {
+            score = 4;
+        } else if ([otherCard.suit isEqualToString:self.suit]){
+            score = 1;
+        }
+    }
+    
+    return score;
+}
+```
+
+在`ViewController.m`中`import``CardMatchingGame.h`类，然后需要一个属性：
+
+```objc
+@property (strong, nonatomic) CardMatchingGame *game;
+```
+
+然后lazily instantiate it：
+
+```objc
+- (CardMatchingGame *)game
+{
+    if (!_game) {
+        _game = [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count]
+                                                  usingDeck:[self creatDeck]];
+    }
+    
+    return _game;
+} // game
+```
+
+把12个牌按住`Ctrl`拖拽，产生`Outlet Collection：
+
+```ojbc
+@property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
+```
+
+将`touchCardButton:`方法中的内容删掉，重新写，为了对比，将删掉的内容注释起来。
+
+```objc
+#pragma mark - IBAction
+
+- (IBAction)touchCardButton:(UIButton *)sender
+{
+    
+//    if ([sender.currentTitle length]) {
+//        [sender setBackgroundImage:[UIImage imageNamed:@"CardBack"]
+//                          forState:UIControlStateNormal];
+//        [sender setTitle:@"" forState:UIControlStateNormal];
+//    } else {
+//        Card *randomcard = [self.deck drawRandomCard]; // draw a card
+//        
+//        // Protect against an empty deck.
+//        if (randomcard) {
+//            [sender setBackgroundImage:[UIImage imageNamed:@"CardFront"]
+//                              forState:UIControlStateNormal];
+//            [sender setTitle:randomcard.contents
+//                    forState:UIControlStateNormal];
+//        }
+//    }
+    
+    unsigned long chosenButtonIndex = [self.cardButtons indexOfObject:sender];
+    [self.game chooseCardAtIndex:chosenButtonIndex];
+    [self updateUI];
+    
+    // update flipCount in there
+    // because every time touch the button, this method will be call
+//    self.flipCount++;
+    
+} // touchCardButton:
+```
+
+`deck`方法也不需要了。实现`updateUI`方法：
+
+```objc
+- (void)updateUI
+{
+    for (UIButton *cardButton in self.cardButtons) {
+        unsigned long cardButtonIndex = [self.cardButtons indexOfObject:cardButton];
+        Card *card = [self.game cardAtIndex:cardButtonIndex];
+        [cardButton setTitle:[self titleForCard:card]
+                    forState:UIControlStateNormal];
+        
+        [cardButton setBackgroundImage:[self backgroundImageForCard:card]
+                              forState:UIControlStateNormal];
+        
+        cardButton.enabled = !card.isMatched;
+        self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", (long)self.game.score];
+    }
+} // updateUI
+
+#pragma mark - Helper Methods
+
+- (NSString *)titleForCard:(Card *)card
+{
+    return card.isChosen ? card.contents : @"";
+} // titleForCard:
+
+-(UIImage *)backgroundImageForCard:(Card *)card
+{
+    return [UIImage imageNamed:card.isChosen ? @"CardFront" : @"CardBack"];
+}
+```
+
+然后添加一个`Label`显示分数：
+
+```objc
+@property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
+```
+
+效果如图：
+
+<center>
+![](http://ww3.sinaimg.cn/large/a9c4d5f6jw1f4tezo3lz6j20af0iiq4r.jpg)
+</center>
+
+
 
